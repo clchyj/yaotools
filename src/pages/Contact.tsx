@@ -87,7 +87,7 @@ export const Contact = () => {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-lg font-semibold text-gray-900">邮箱</h3>
-                      <p className="text-gray-600 mt-1">support@yaotools.com</p>
+                      <p className="text-gray-600 mt-1">clchyj@163.com</p>
                       <p className="text-sm text-gray-500 mt-1">24小时内回复</p>
                     </div>
                   </div>
@@ -100,7 +100,7 @@ export const Contact = () => {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-lg font-semibold text-gray-900">微信客服</h3>
-                      <p className="text-gray-600 mt-1">yaotools_support</p>
+                      <p className="text-gray-600 mt-1">clchyj</p>
                       <p className="text-sm text-gray-500 mt-1">工作时间在线</p>
                     </div>
                   </div>
@@ -113,7 +113,7 @@ export const Contact = () => {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-lg font-semibold text-gray-900">客服电话</h3>
-                      <p className="text-gray-600 mt-1">400-888-0001</p>
+                      <p className="text-gray-600 mt-1">13776914752</p>
                       <p className="text-sm text-gray-500 mt-1">工作时间：9:00-18:00</p>
                     </div>
                   </div>
@@ -126,8 +126,8 @@ export const Contact = () => {
                     </div>
                     <div className="ml-4">
                       <h3 className="text-lg font-semibold text-gray-900">办公地址</h3>
-                      <p className="text-gray-600 mt-1">北京市朝阳区</p>
-                      <p className="text-gray-600">科技园区创新大厦</p>
+                      <p className="text-gray-600 mt-1">江苏南通</p>
+                      <p className="text-gray-600">江苏南通</p>
                     </div>
                   </div>
 
@@ -149,10 +149,8 @@ export const Contact = () => {
                 {/* QR Code */}
                 <div className="mt-8 pt-8 border-t border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">扫码添加客服微信</h3>
-                  <div className="bg-white p-4 rounded-lg border-2 border-gray-200 text-center">
-                    <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                      <MessageCircle className="h-12 w-12 text-gray-400" />
-                    </div>
+                    <div className="bg-white p-4 rounded-lg border-2 border-gray-200 text-center">
+                    <img src="/image/wechat.jpg" alt="微信客服二维码" className="w-32 h-32 mx-auto mb-3 rounded-lg border object-cover" />
                     <p className="text-sm text-gray-600">微信客服二维码</p>
                   </div>
                 </div>

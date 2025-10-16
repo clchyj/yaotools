@@ -120,7 +120,7 @@ export const Redeem = () => {
                 <div className="text-right">
                   <p className="text-sm text-gray-600">账户类型</p>
                   <p className="font-medium">
-                    {userProfile?.role === 'premium' || userProfile?.role === 'admin' || userProfile?.role === 'super_admin' ? '会员用户' : '普通用户'}
+                    {(userProfile?.is_premium || userProfile?.role === 'admin' || userProfile?.role === 'super_admin') ? '会员用户' : '普通用户'}
                   </p>
                 </div>
               </div>
@@ -205,9 +205,9 @@ export const Redeem = () => {
                 <div className="mt-4 text-center">
                   <div className="inline-block p-4 bg-white border-2 border-gray-200 rounded-lg">
                     <img 
-                      src="/api/placeholder/200/200" 
+                      src="/image/wechat.jpg" 
                       alt="客服微信二维码" 
-                      className="w-32 h-32 mx-auto"
+                      className="w-32 h-32 mx-auto rounded-lg border"
                     />
                     <p className="mt-2 text-xs text-gray-500">扫码添加客服微信</p>
                     <p className="text-xs text-gray-400">获取授权码和技术支持</p>
