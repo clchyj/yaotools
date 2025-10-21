@@ -26,6 +26,7 @@ export const AIAssistantLocal = () => {
   const [loadingModels, setLoadingModels] = useState(true)
   const [refreshingModels, setRefreshingModels] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
+  const [streamMode] = useState(false) // 流式输出模式
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // 使用工具控制Hook
@@ -74,16 +75,15 @@ export const AIAssistantLocal = () => {
           fetchAvailableModels(true)
         }
       )
-      .on('subscribe', (status, err) => {
+      .subscribe((status: 'SUBSCRIBED' | 'TIMED_OUT' | 'CHANNEL_ERROR' | 'CLOSED') => {
         if (status === 'SUBSCRIBED') {
           console.log('Successfully subscribed to ai_models changes')
           setIsConnected(true)
         } else {
-          console.log('Subscription status:', status, err)
+          console.log('Subscription status:', status)
           setIsConnected(false)
         }
       })
-      .subscribe()
     
     return () => {
       clearInterval(interval)
@@ -148,6 +148,110 @@ export const AIAssistantLocal = () => {
   }
 
   // 配置现在从数据库获取，不需要本地配置函数
+
+  // 流式AI调用函数
+  const callAIModelStream = async (
+    message: string,
+    onChunk: (chunk: string) => void
+  ): Promise<void> => {
+    if (!selectedModel) {
+      throw new Error('请等待模型加载完成')
+    }
+
+    if (!selectedModel.api_key) {
+      throw new Error('模型配置中缺少API Key，请联系管理员')
+    }
+
+    console.log('Calling AI model with streaming:', {
+      name: selectedModel.name,
+      model_name: selectedModel.model_name,
+      stream: true
+    })
+
+    try {
+      const isOpenRouter = selectedModel.api_url.includes('openrouter.ai')
+      
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${selectedModel.api_key}`,
+        'Content-Type': 'application/json'
+      }
+      
+      if (isOpenRouter) {
+        headers['HTTP-Referer'] = window.location.origin
+        headers['X-Title'] = 'YaoTools AI Assistant'
+      }
+      
+      const response = await fetch(selectedModel.api_url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          model: selectedModel.model_name,
+          messages: [{ role: 'user', content: message }],
+          max_tokens: selectedModel.max_tokens || 1000,
+          temperature: selectedModel.temperature || 0.7,
+          stream: true // 启用流式输出
+        })
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+
+      if (!response.body) {
+        throw new Error('响应中没有流数据')
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let fullContent = ''
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
+
+          for (const line of lines) {
+            if (line.trim() === '') continue
+            
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6).trim()
+              
+              if (data === '[DONE]') {
+                break
+              }
+              
+              try {
+                const parsed = JSON.parse(data)
+                const content = parsed.choices?.[0]?.delta?.content
+                
+                if (content) {
+                  fullContent += content
+                  onChunk(fullContent)
+                }
+              } catch (parseError) {
+                console.warn('解析SSE数据失败:', data)
+              }
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock()
+      }
+
+      if (!fullContent) {
+        throw new Error('未接收到有效的响应内容')
+      }
+    } catch (error) {
+      console.error('Error in stream call:', error)
+      throw error
+    }
+  }
 
   const callAIModel = async (message: string): Promise<string> => {
     if (!selectedModel) {
@@ -275,17 +379,28 @@ export const AIAssistantLocal = () => {
       // 先扣减使用次数
       await updateUsage(true)
       
-      // 调用AI模型
-      const aiResponse = await callAIModel(userMessage)
-
-      // 更新消息
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === newMessage.id 
-            ? { ...msg, ai_response: aiResponse, isLoading: false }
-            : msg
+      if (streamMode) {
+        // 流式输出
+        await callAIModelStream(userMessage, (chunk) => {
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === newMessage.id 
+                ? { ...msg, ai_response: chunk, isLoading: false }
+                : msg
+            )
+          )
+        })
+      } else {
+        // 普通输出
+        const aiResponse = await callAIModel(userMessage)
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === newMessage.id 
+              ? { ...msg, ai_response: aiResponse, isLoading: false }
+              : msg
+          )
         )
-      )
+      }
     } catch (error) {
       console.error('Error sending message:', error)
       

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { useAuthStore } from '../lib/store'
-import { supabase } from '../lib/supabase'
 import { getEmailProviderUrl, getEmailProviderName } from '../utils/emailProviders'
 import { Eye, EyeOff, UserPlus, Mail, ExternalLink, AlertCircle } from 'lucide-react'
 

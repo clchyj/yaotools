@@ -42,9 +42,10 @@ export const UsageHistory = () => {
       setLogs(logsData)
       
       // Extract unique categories
-      const uniqueCategories = ['全部', ...Array.from(new Set(
-        logsData.map(log => log.tools?.category).filter(Boolean)
-      ))]
+      const categoryList = logsData
+        .map(log => log.tools?.category)
+        .filter((c): c is string => Boolean(c))
+      const uniqueCategories = ['全部', ...Array.from(new Set(categoryList))]
       setCategories(uniqueCategories)
     } catch (error) {
       console.error('Error fetching usage logs:', error)

@@ -6,10 +6,10 @@ import { useToolControl } from '../hooks/useToolControl'
 import { QRModal } from '../components/QRModal'
 import { supabase, type AIModel, type ChatMessage } from '../lib/supabase'
 import { useAuthStore as useAuthStoreForUsage } from '../lib/store'
-import { Send, Bot, User, Loader2, Zap, Play, Lock, AlertCircle } from 'lucide-react'
+import { Send, Bot, User, Loader2, Play, Lock, AlertCircle } from 'lucide-react'
 
 export const AIAssistant = () => {
-  const { user, userProfile } = useAuthStore()
+  const { user } = useAuthStore()
   const { updateUsage } = useAuthStoreForUsage()
   const [messages, setMessages] = useState<(ChatMessage & { isLoading?: boolean })[]>([])
   const [inputMessage, setInputMessage] = useState('')
@@ -375,7 +375,7 @@ export const AIAssistant = () => {
                     </div>
                   ) : (
                     <>
-                      {messages.map((message, index) => (
+                      {messages.map((message) => (
                         <div key={message.id} className="space-y-4">
                           {/* User message */}
                           <div className="flex items-start justify-end">

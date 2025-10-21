@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { PrivateRoute } from '../components/PrivateRoute'
-import { useAuthStore } from '../lib/store'
 import { supabase, type Tool } from '../lib/supabase'
 import { useToolControl } from '../hooks/useToolControl'
 import { QRModal } from '../components/QRModal'
@@ -11,7 +10,6 @@ import { ArrowLeft, AlertCircle, Play, Lock } from 'lucide-react'
 export const ToolDetail = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { userProfile } = useAuthStore()
   
   const [tool, setTool] = useState<Tool | null>(null)
   const [loading, setLoading] = useState(true)
@@ -55,7 +53,7 @@ export const ToolDetail = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-gray-300 rounded w-1/4"></div>
             <div className="h-64 bg-gray-300 rounded"></div>
@@ -68,7 +66,7 @@ export const ToolDetail = () => {
   if (!tool) {
     return (
       <Layout>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900">工具不存在</h2>
             <button
@@ -86,7 +84,7 @@ export const ToolDetail = () => {
   return (
     <PrivateRoute>
       <Layout>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Back button */}
           <button
             onClick={() => navigate('/tools')}
@@ -266,7 +264,7 @@ export const ToolDetail = () => {
                     </body>
                     </html>
                   `}
-                  className="w-full min-h-[600px] border-0"
+                  className="w-full min-h-[800px] border-0"
                   title={tool.name}
                   sandbox={isToolEnabled ? "allow-scripts allow-same-origin allow-forms allow-popups allow-modals" : "allow-scripts"}
                 />
